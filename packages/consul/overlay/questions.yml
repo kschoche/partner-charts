@@ -1,0 +1,857 @@
+categories:
+- Service Mesh
+- Networking
+labels:
+  io.rancher.certified: partner
+  io.cattle.role: cluster # options are cluster/project
+rancher_min_version: 2.3.0
+questions:
+
+# config global defaults
+- variable: global.enabled
+  default: true
+  description: "Consul Chart Global Settings"
+  type: boolean
+  required: true
+  label: Consul Chart Global Settings
+  show_subquestion_if: true
+  group: "Global Settings"
+  subquestions:
+  - variable: global.name
+    default: ""
+    description: "Set the prefix used for all resources in the helm chart"
+    type: string
+    label: Consul Chart Name
+  - variable: global.domain
+    default: "consul"
+    description: "Domain Consul will answer DNS queries for"
+    type: string
+    required: true
+    label: Consul Chart Domain
+  - variable: global.image
+    default: "consul:1.8.2"
+    description: "Name (and tag) of the Consul Docker image for clients and servers"
+    type: string
+    required: true
+    label: Consul Chart Image
+  - variable: global.imagePullSecrets
+    default: "[]"
+    description: "Image pull secret names that will be applied to each service account"
+    type: string
+    label: Image Pull Secret Names
+  - variable: global.imageK8S
+    default: "hashicorp/consul-k8s:0.18.1"
+    description: "Name (and tag) of the consul-k8s Docker image"
+    type: string
+    required: true
+    label: Consul Chart K8s Image
+  - variable: global.imageEnvoy
+    default: "envoyproxy/envoy-alpine:v1.14.2"
+    description: "Defines the default envoy image to use for ingress terminating gateways"
+    type: string
+    required: true
+    label: Consul Chart Envoy Image
+  - variable: global.datacenter
+    default: "dc1"
+    description: "Name of the datacenter that the agents should register"
+    type: string
+    required: true
+    label: Datacenter Name
+  - variable: global.enablePodSecurityPolicies
+    default: false
+    description: "Controls whether pod security policies are created for the Consul components by this chart"
+    type: boolean
+    label: Consul Chart Enable Security Policies
+  - variable: global.gossipEncryption.secretName
+    default: ""
+    description: "Name of the  Kubernetes secret that holds the gossip encryption key"
+    type: string
+    label: Consul Chart Gossip Secret Name
+  - variable: global.gossipEncryption.secretKey
+    default: ""
+    description: "Name of the secret key within the Kubernetes secret key"
+    type: string
+    label: Consul Chart Gossip Secret Key
+  - variable: global.tls.enabled
+    default: false
+    description: "Enable TLS encryption on clients and servers"
+    type: boolean
+    label: Consul Chart TLS
+  - variable: global.tls.enableAutoEncrypt
+    default: false
+    description: "Enable auto-encrypt on clients and servers"
+    type: boolean
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart TLS
+  - variable: global.tls.serverAdditionalDNSSANs
+    default: "[]"
+    description: "List of additional DNS names to set as Subject Alternative Names (SANs) in the server certificate"
+    type: string
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart Additional DNS Names
+  - variable: global.tls.serverAdditionalIPSAN
+    default: "[]"
+    description: "List of additional IP addresses to set as Subject Alternative Names (SANs) in the server certificate"
+    type: string
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart Additional IPs
+  - variable: global.tls.verify
+    default: true
+    description: "Set verify_outgoing, verify_server_hostname, and verify_incoming_rpc"
+    type: boolean
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart Verify TLS
+  - variable: global.tls.httpsOnly
+    default: true
+    description: "HTTPS connections on client and servers"
+    type: boolean
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart HTTPS on Clients and Servers
+  - variable: global.tls.caCert.secretName
+    default: ""
+    description: "Kubernetes secret name containing the certificate of the CA to use for TLS"
+    type: string
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart CA Cert Secret Name
+  - variable: global.tls.caCert.secretKey
+    default: ""
+    description: "Kubernetes secret key containing the certificate of the CA to use for TLS"
+    type: string
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart CA Cert Secret Key
+  - variable: global.tls.caKey.secretName
+    default: ""
+    description: "Kubernetes secret name containing the private key of the CA to use for TLS"
+    type: string
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart CA Key Secret Name
+  - variable: global.tls.caKey.secretKey
+    default: ""
+    description: "Kubernetes secret key containing the private key of the CA to use for TLS"
+    type: string
+    show_if: "global.tls.enabled=true"
+    label: Consul Chart CA Key Secret Key
+  - variable: global.acls.manageSystemACLs
+    default: false
+    description: "Manage ACL tokens and policies for all Consul and consul-k8s components"
+    type: boolean
+    label: Consul Chart ACLs
+  - variable: global.acls.bootstrapToken.secretName
+    default: ""
+    description: "Kubernetes secret containing the bootstrap token name"
+    type: string
+    show_if: "global.acls.manageSystemACLs=true"
+    label: Consul Chart Boostrap Token Name
+  - variable: global.acls.bootstrapToken.secretKey
+    default: ""
+    description: "Kubernetes secret containing the bootstrap token key"
+    type: string
+    show_if: "global.acls.manageSystemACLs=true"
+    label: Consul Chart Boostrap Token Key
+  - variable: global.acls.createReplicationToken
+    default: false
+    description: "ACL token will be created that can be used in secondary datacenters for replication"
+    type: boolean
+    show_if: "global.acls.manageSystemACLs=true"
+    label: Consul Chart Create Replication Token
+  - variable: global.acls.replicationToken.secretName
+    default: ""
+    description: "Replication token name"
+    type: string
+    show_if: "global.acls.manageSystemACLs=true"
+    label: Consul Chart Replication Token Name
+  - variable: global.acls.replicationToken.secretKey
+    default: ""
+    description: "Replication token key"
+    type: string
+    show_if: "global.acls.manageSystemACLs=true"
+    label: Consul Chart Replication Token Key
+  - variable: global.federation.enabled
+    default: false
+    description: "Enable federation"
+    type: boolean
+    label: Consul Chart Federation
+  - variable: global.federation.createFederationSecret
+    default: false
+    description: "Create federation secret"
+    type: boolen
+    show_if: "global.federation.enabled=true"
+    label: Consul Chart Create Federation Secret
+
+# config server settings
+- variable: server.enabled
+  default: true
+  description: "Consul Chart Server Settings"
+  type: boolean
+  required: true
+  label: Consul Chart Server Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "Server Settings"
+  subquestions:
+  - variable: server.replicas
+    default: 3
+    description: "Number of replica servers"
+    type: int
+    required: true
+    label: Consul Chart Replica Servers
+  - variable: server.bootstrapExpect
+    default: 3
+    description: "Number of servers to boostrap. It should match number of replica servers"
+    type: int
+    required: true
+    label: Consul Chart Server Boostrap Expect
+  - variable: server.enterpriseLicense.secretName
+    default: ""
+    description: "Kubernetes secret name that contains the Consul Enterprise license"
+    type: string
+    label: Consul Chart Enteprise License Secret Name
+  - variable: server.enterpriseLicense.secretKey
+    default: ""
+    description: "Kubernetes secret key that contains the Consul Enterprise license"
+    type: string
+    label: Consul Chart Enteprise License Secret Key
+  - variable: server.storage
+    default: 10Gi
+    description: "Server pod stateful storage capacity"
+    type: string
+    label: Consul Chart Server Pod Storage Capacity
+  - variable: server.storageClass
+    default: ""
+    description: "Server pod stateful storage class"
+    type: string
+    label: Consul Chart Server Pod Storage Class
+  - variable: server.connect
+    default: true
+    description: "Enable Consul Connect"
+    type: boolean
+    label: Consul Chart Enable Consul Connect
+  - variable: server.updatePartition
+    default: 0
+    description: "Control rolling update"
+    type: int
+    label: Consul Chart Partition Rolling Update
+  - variable: server.extraConfig
+    default: "{}"
+    description: "Raw string of extra configuration to set with the client. This should  be JSON"
+    type: string
+    label: Consul Chart Server Extra Configs
+  - variable: server.extraVolumes
+    default: "[]"
+    description: "List of extra volumes to mount"
+    type: string
+    label: Consul Chart Server Extra Volumes
+  - variable: server.tolerations
+    default: ""
+    description: "Toleration settings for server pods"
+    type: string
+    label: Consul Chart Server Pods Toleration Settings
+  - variable: server.extraLabels
+    default: ""
+    description: "Extra labels to attach to the server pods"
+    type: string
+    label: Consul Chart Server Pods Extra Labels
+  - variable: server.annotations
+    default: ""
+    description: "Extra Annotations to attach to the server pods"
+    type: string
+    label: Consul Chart Server Pods Extra Annotations
+  - variable: server.service.annotations
+    default: ""
+    description: "Extra Annotations to attach to the server service"
+    type: string
+    label: Consul Chart Server Service Extra Annotations
+  - variable: server.extraEnvironmentVars
+    default: "{}"
+    description: "List of extra environment variables to set with the stateful set"
+    type: string
+    label: Consul Chart Server Service Extra Environment Vars
+
+# config external server settings
+- variable: externalServers.enabled
+  default: true
+  description: "Consul Chart External Server Settings"
+  type: boolean
+  required: true
+  label: Consul Chart External Server Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "External Server Settings"
+  subquestions:
+  - variable: externalServers.hosts
+    default: ""
+    description: "External Consul server hosts"
+    type: string
+    label: Consul Chart External Servers Hosts
+  - variable: externalServers.httpsPort
+    default: 8501
+    description: "HTTPS port of the Consul servers"
+    type: int
+    label: Consul Chart External Servers HTTPS port
+  - variable: externalServers.tlsServerName
+    default: ""
+    description: "Server name as the SNI host header"
+    type: string
+    label: Consul Chart External Servers Name SNI Host Header
+  - variable: externalServers.useSystemRoots
+    default: false
+    description: "Ignore CA set in global.tls.caCert"
+    type: boolean
+    label: Consul Chart External Servers Ignore
+  - variable: externalServers.k8sAuthMethodHost
+    default: ""
+    description: "Kubernetes Auth Method Host"
+    type: string
+    show_if: "global.acls.manageSystemACLs=true&&connectInject.enabled=true"
+    label: Consul Chart External Kubernetes Auth Method Host
+
+# config client settings
+- variable: client.enabled
+  default: true
+  description: "Consul Chart Client Settings"
+  type: boolean
+  required: true
+  label: Consul Chart Client Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "Client Settings"
+  subquestions:
+  - variable: client.image
+    default: ""
+    description: "Custom image to use for client"
+    type: string
+    label: Consul Chart Client Custom Image
+  - variable: client.join
+    default: ""
+    description: "Consul server the client should join"
+    type: string
+    label: Consul Chart Client Server Join
+  - variable: client.dataDirectoryHostPath
+    default: ""
+    description: "Absolute path to a directory on the host to use as the Consul client data dir"
+    type: string
+    label: Consul Chart Client Data Directory
+  - variable: client.grpc
+    default: true
+    description: "Enable gRPC"
+    type: boolean
+    show_if: "meshGateway.enabled=true||connectInject.enabled=true"
+    label: Consul Chart Client gRPC
+  - variable: client.exposeGossipPorts
+    default: false
+    description: "Exposes the clients' gossip ports as hostPorts"
+    type: boolean
+    label: Consul Chart Client Expose Gossip Ports as Host Ports
+  - variable: client.extraConfig
+    default: "{}"
+    description: "Raw string of extra configuration to set with the client. This should  be JSON"
+    type: string
+    label: Consul Chart Client Extra Configs
+  - variable: client.extraVolumes
+    default: "[]"
+    description: "List of extra volumes to mount"
+    type: string
+    label: Consul Chart Client Extra Volumes
+  - variable: client.annotations
+    default: ""
+    description: "Extra annotations to attach to the client pods"
+    type: string
+    label: Consul Chart Client Extra Annotations
+  - variable: client.extraEnvironmentVars
+    default: "{}"
+    description: "Extra environment variables to set with the pod"
+    type: string
+    label: Consul Chart Client Extra Environment Vars
+  - variable: client.dnsPolicy
+    default: ""
+    description: "DNS Policy to use"
+    type: string
+    label: Consul Chart Client DNS Policy
+  - variable: client.hostNetwork
+    default: false
+    description: "Use host networking instead of hostPort"
+    type: boolean
+    label: Consul Chart Client Use Host Networking
+  - variable: client.updateStrategy
+    default: ""
+    description: "Rolling update strategy"
+    type: string
+    label: Consul Chart Client Rolling Update Stategy
+  - variable: client.snapshotAgent.enabled
+    default: false
+    description: "Set up snapshot agents"
+    type: boolean
+    label: Consul Chart Client Snapshot Agents
+  - variable: client.snapshotAgent.replicas
+    default: 2
+    description: "Number of snapshot agents created"
+    type: int
+    show_if: "client.snapshotAgent.enabled=true"
+    label: Consul Chart Client Snapshot Agents
+  - variable: client.snapshotAgent.configSecret.secretName
+    default: ""
+    description: "Kubernetes secret name to contain the entire config"
+    type: string
+    show_if: "client.snapshotAgent.enabled=true"
+    label: Consul Chart Client Secret Name
+  - variable: client.snapshotAgent.configSecret.secretKey
+    default: ""
+    description: "Kubernetes secret key to contain the entire config"
+    type: string
+    show_if: "client.snapshotAgent.enabled=true"
+    label: Consul Chart Client Secret Key
+  - variable: client.snapshotAgent.caCert
+    default: ""
+    description: "Optional CA added to the trusted system CAs"
+    type: string
+    show_if: "client.snapshotAgent.enabled=true"
+    label: Consul Chart Client Optional CA
+
+# config dns settings
+- variable: dns.enabled
+  default: true
+  description: "Consul Chart DNS Settings"
+  type: boolean
+  required: true
+  label: Consul Chart DNS Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "DNS Settings"
+  subquestions:
+  - variable: dns.clusterIP
+    default: ""
+    description: "Predefined cluster IP for the DNS service"
+    type: string
+    label: Consul Chart DNS Predefined Cluster IP
+  - variable: dns.annotations
+    default: ""
+    description: "Extra annotations to attach to the dns service"
+    type: string
+    label: Consul Chart DNS Extra Annotations
+
+# config ui settings
+- variable: ui.enabled
+  default: true
+  description: "Consul Chart UI Settings"
+  type: boolean
+  required: true
+  label: Consul Chart UI Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "UI Settings"
+  subquestions:
+  - variable: ui.service.enabled
+    default: true
+    description: "Service entry for the Consul UI"
+    type: boolean
+    label: Consul Chart UI Enable Service Entry
+  - variable: ui.service.type
+    default: "LoadBalancer"
+    description: "Type of service created"
+    type: enum
+    show_if: "ui.service.enabled=true"
+    label: Consul Chart UI Service Type
+    options:
+      - "LoadBalancer"
+      - "ClusterIP"
+      - "NodePort"
+  - variable: ui.service.annotations
+    default: ""
+    description: "Annotations to apply to the UI service"
+    type: string
+    show_if: "ui.service.enabled=true"
+    label: Consul Chart UI Service Annotations
+  - variable: ui.service.additionalSpec
+    default: ""
+    description: "Additional service spec values"
+    type: string
+    show_if: "ui.service.enabled=true"
+    label: Consul Chart UI Service Additional Spec
+
+# config sync catalog settings
+- variable: syncCatalog.enabled
+  default: false
+  description: "Consul Chart Sync Catalog Settings"
+  type: boolean
+  required: true
+  label: Consul Chart Sync Catalog Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "Sync Catalog Settings"
+  subquestions:
+  - variable: syncCatalog.image
+    default: ""
+    description: "Sync catalog image to use"
+    type: string
+    label: Consul Chart Sync Catalog Image
+  - variable: syncCatalog.k8sPrefix
+    default: ""
+    description: "Service prefix to prepend to services before registering"
+    type: string
+    label: Consul Chart Sync Catalog K8s Prefix
+  - variable: syncCatalog.consulNamespaces.consulDestinationNamespace
+    default: "default"
+    description: "Name of the Consul namespace to register all services into"
+    type: string
+    label: Consul Chart Sync Catalog K8s Destination Namespace
+    show_if: "server.enterpriseLicense.secretKey="
+  - variable: syncCatalog.consulNamespaces.mirroringK8S
+    default: false
+    description: "Enables k8s services to be registered into a Consul namespace"
+    type: boolean
+    label: Consul Chart Sync Catalog K8s Services Registration to Consul Namespace
+    show_if: "server.enterpriseLicense.secretKey="
+  - variable: syncCatalog.consulNamespaces.mirroringK8SPrefix
+    default: ""
+    description: "Consul namespace prefix"
+    type: string
+    label: Consul Chart Sync Catalog K8s Services Registration to Consul Namespace
+    show_if: "syncCatalog.consulNamespaces.mirroringK8S=true&&server.enterpriseLicense.secretKey="
+  - variable: syncCatalog.consulPrefix
+    default: ""
+    description: "Consul service prefix which prepends itself"
+    type: string
+    label: Consul Chart Sync Catalog Service Prefix
+  - variable: syncCatalog.aclSyncToken.secretName
+    default: ""
+    description: "Sync Catalog ACL Sync Token Name"
+    type: string
+    label: Consul Chart Sync Catalog ACL Sync Token Name
+    show_if: "global.acls.manageSystemACLs=true"
+  - variable: syncCatalog.aclSyncToken.secretKey
+    default: ""
+    description: "Sync Catalog ACL Sync Token Key"
+    type: string
+    label: Consul Chart Sync Catalog ACL Sync Token Key
+    show_if: "global.acls.manageSystemACLs=true"
+  - variable: syncCatalog.logLevel
+    default: "info"
+    description: Log verbosity level. One of "trace", "debug", "info", "warn", or "error"
+    type: enum
+    options:
+      - "trace"
+      - "debug"
+      - "info"
+      - "warn"
+      - "error"
+    label: Consul Chart Sync Catalog Log Level
+
+# config connect inject settings
+- variable: connectInject.enabled
+  default: false
+  description: "Consul Chart Connect Inject Settings"
+  type: boolean
+  required: true
+  label: Consul Chart Connect Inject Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "Connect Inject Settings"
+  subquestions:
+  - variable: connectInject.image
+    default: ""
+    description: "Connect Inject image to use"
+    type: string
+    label: Consul Chart Connect Inject Image
+  - variable: connectInject.namespaceSelector
+    default: ""
+    description: "Restrict the webhook to specific namespaces"
+    type: string
+    label: Consul Chart Connect Inject Namespace Selector
+  - variable: connectInject.consulNamespaces.consulDestinationNamespace
+    default: "default"
+    description: "Name of the Consul namespace to register all k8s pods into"
+    type: string
+    show_if: "server.enterpriseLicense.secretKey="
+    label: Consul Chart Connect Inject Consul Namespace
+  - variable: connectInject.consulNamespaces.mirroringK8S
+    default: false
+    description: "K8s pods to be registered into a Consul namespace of the same name as their k8s namespace"
+    type: boolean
+    show_if: "server.enterpriseLicense.secretKey="
+    label: Consul Chart Connect Inject Mirror K8s Namespace
+  - variable: connectInject.consulNamespaces.mirroringK8SPrefix
+    default: "default"
+    description: "K8s pods to be registered into a Consul namespace of the same name as their k8s namespace"
+    type: string
+    show_if: "connectInject.consulNamespaces.mirroringK8S=true&&server.enterpriseLicense.secretKey="
+    label: Consul Chart Connect Inject Mirror K8s Namespace
+  - variable: connectInject.certs.secretName
+    default: ""
+    description: "Name of the secret that has the TLS certificate and private key to serve the injector webhook"
+    type: string
+    label: Consul Chart Connect Inject Secret Name
+  - variable: connectInject.certs.caBundle
+    default: ""
+    description: "Base64-encoded PEM-encoded certificate bundle for the CA that signed the TLS certificate that the webhook serves"
+    type: string
+    show_if: "connectInject.certs.secretName="
+    label: Consul Chart Connect Inject Secret Name
+  - variable: connectInject.aclBindingRuleSelector
+    default: "serviceaccount.name!=default"
+    description: "aclBindingRuleSelector accepts a query that defines which Service Accounts can authenticate to Consul and receive an ACL token during Connect injection"
+    type: string
+    label: Consul Chart Connect Inject ACL Binding Rule Selector
+  - variable: connectInject.overrideAuthMethodName
+    default: ""
+    description: "Manually setting up an auth method for Connect inject"
+    type: string
+    show_if: "global.acls.manageSystemACLs=false"
+    label: Consul Chart Connect Inject Manual Auth Method
+  - variable: connectInject.aclInjectToken.secretName
+    default: ""
+    description: "Kubernetes secret name that you have created that contains an ACL token for your Consul cluster which allows the Connect injector the correct permissions"
+    type: string
+    label: Consul Chart Connect Inject ACL Token Secret Name
+  - variable: connectInject.aclInjectToken.secretKey
+    default: ""
+    description: "Kubernetes secret key that you have created that contains an ACL token for your Consul cluster which allows the Connect injector the correct permissions"
+    type: string
+    show_if: "connectInject.aclInjectToken.secretName="
+    label: Consul Chart Connect Inject ACL Token Secret Key
+  - variable: connectInject.aclInjectToken.secretKey
+    default: ""
+    description: "Kubernetes secret key that you have created that contains an ACL token for your Consul cluster which allows the Connect injector the correct permissions"
+    type: string
+    show_if: "connectInject.aclInjectToken.secretName="
+    label: Consul Chart Connect Inject ACL Token Secret Key
+  - variable: connectInject.centralConfig.enabled
+    default: true
+    description: "Controls whether central config is enabled on all servers and clients"
+    type: boolean
+    label: Consul Chart Connect Inject Central Config Enable
+  - variable: connectInject.centralConfig.defaultProtocol
+    default: ""
+    description: Valid values are "http", "http2", "grpc" and "tcp"
+    type: enum
+    options:
+      - ""
+      - "http"
+      - "http2"
+      - "grpc"
+      - "tcp"
+    label: Consul Chart Connect Inject Central Config Protocol
+  - variable: connectInject.centralConfig.proxyDefaults
+    default: "{}"
+    description: Raw json string that will be written as the value of he "config" key of the global proxy-defaults config entry
+    type: string
+    label: Consul Chart Connect Inject Central Config Proxy Defaults
+
+# config mesh gateway settings
+- variable: meshGateway.enabled
+  default: false
+  description: "Consul Chart Mesh Gateway Settings"
+  type: boolean
+  required: true
+  label: Consul Chart Mesh Gateway Settings
+  show_if: "global.enabled=true&&global.federation=true"
+  show_subquestion_if: true
+  group: "Mesh Gateway Settings"
+  subquestions:
+  - variable: meshGateway.globalMode
+    default: local
+    description: Globally configure which mode the gateway should run in. Can be set to either "remote", "local", "none" or empty string or "".
+    type: string
+    label: Consul Chart Mesh Gateway Global Mode
+  - variable: meshGateway.replicas
+    default: 2
+    description: "Number of replicas for the Deployment"
+    type: int
+    label: Consul Chart Mesh Gateway Replicas
+  - variable: meshGateway.wanAddress.source
+    default: "Service"
+    description: "Configures where to retrieve the WAN address (and possibly port) for the mesh gateway from. Can be set to either: Service, NodeIP, NodeName or Static."
+    type: enum
+    options:
+      - "Service"
+      - "NodeIP"
+      - "NodeName"
+      - "Static"
+    label: Consul Chart Mesh Gateway Source
+  - variable: meshGateway.wanAddress.port
+    default: 443
+    description: "Port that gets registered for WAN traffic"
+    type: int
+    label: Consul Chart Mesh Gateway Port
+  - variable: meshGateway.wanAddress.static
+    description: If source is set to "Static" then this value will be used as the WAN address of the mesh gateways
+    type: int
+    show_if: "meshGateway.wanAddress.source=Static"
+    label: Consul Chart Mesh Gateway Static Address
+  - variable: meshGateway.service.enabled
+    default: true
+    description: "Whether to create a Service or not"
+    type: boolean
+    label: Consul Chart Mesh Gateway Enable Service
+  - variable: meshGateway.service.port
+    default: 443
+    description: "Port that the service will be exposed on"
+    type: int
+    show_if: "meshGateway.service.enabled=true"
+    label: Consul Chart Mesh Gateway Port
+  - variable: meshGateway.service.type
+    default: "LoadBalancer"
+    description: "Type of service"
+    type: enum
+    show_if: "meshGateway.service.enabled=true"
+    options:
+      - "LoadBalancer"
+      - "ClusterIP"
+      - "NodePort"
+    label: Consul Chart Mesh Gateway Service Type
+  - variable: meshGateway.service.nodePort
+    description: "Hardcode the nodePort of the service if using a NodePort service"
+    type: int
+    show_if: "meshGateway.service.enabled=true&&meshGateway.service.type=NodePort"
+    label: Consul Chart Mesh Gateway Node Port
+  - variable: meshGateway.service.annotations
+    default: ""
+    description: "Annotations to apply to the mesh gateway service"
+    type: string
+    show_if: "meshGateway.service.enabled=true"
+    label: Consul Chart Mesh Gateway Annotations
+  - variable: meshGateway.service.additionalSpec
+    default: ""
+    description: "Optional YAML string that will be appended to the Service spec"
+    type: string
+    show_if: "meshGateway.service.enabled=true"
+    label: Consul Chart Mesh Gateway Additional Spec
+  - variable: meshGateway.imageEnvoy
+    default: "envoyproxy/envoy-alpine:v1.14.2"
+    description: "Envoy image to use"
+    type: string
+    label: Consul Chart Mesh Gateway Envoy Image
+  - variable: meshGateway.hostNetwork
+    default: false
+    description: "If set to true, gateway Pods will run on the host network"
+    type: boolean
+    label: Consul Chart Mesh Gateway Host Network
+  - variable: meshGateway.dnsPolicy
+    default: ""
+    description: "DNS policy to use"
+    type: string
+    label: Consul Chart Mesh Gateway DNS Policy
+  - variable: meshGateway.containerPort
+    default: 8443
+    description: "Port that the gateway will run on inside the container"
+    type: int
+    label: Consul Chart Mesh Gateway Container Port
+  - variable: meshGateway.hostPort
+    description: "Optional hostPort for the gateway to be exposed on"
+    type: int
+    label: Consul Chart Mesh Gateway Container Host Port
+  - variable: meshGateway.annotations
+    default: ""
+    description: "Annotations to apply to the mesh gateway deployment"
+    type: string
+    label: Consul Chart Mesh Gateway Annotations
+
+# config ingress gateway settings
+- variable: ingressGateways.enabled
+  default: false
+  description: "Consul Chart Ingress Gateway Settings"
+  type: boolean
+  required: true
+  label: Consul Chart Ingress Gateway Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "Ingress Gateway Settings"
+  subquestions:
+  - variable: ingressGateways.defaults.replicas
+    default: 2
+    description: "Number of replicas for each ingress gateway defined"
+    type: int
+    label: Consul Chart Ingress Gateway Replicas
+  - variable: ingressGateways.defaults.service.type
+    default: "ClusterIP"
+    description: "Type of service"
+    type: enum
+    options:
+      - "ClusterIP"
+      - "LoadBalancer"
+      - "NodePort"
+    label: Consul Chart Ingress Gateway Service Type
+  - variable: ingressGateways.defaults.service.ports.port
+    default: 8080
+    description: "Port that will be exposed on the service and gateway container"
+    type: int
+    label: Consul Chart Ingress Gateway Port 8080
+  - variable: ingressGateways.defaults.service.ports.port.nodePort
+    default: ""
+    description: "Node Port that will be exposed on the service and gateway container"
+    type: int
+    show_if: "ingressGateways.defaults.service.type=NodePort"
+    label: Consul Chart Ingress Gateway Node Port
+  - variable: ingressGateways.defaults.service.ports.port
+    default: 8443
+    description: "Port that will be exposed on the service and gateway container"
+    type: int
+    label: Consul Chart Ingress Gateway Port 8443
+  - variable: ingressGateways.defaults.service.ports.port.nodePort
+    description: "Node Port that will be exposed on the service and gateway container"
+    type: int
+    show_if: "ingressGateways.defaults.service.type=NodePort"
+    label: Consul Chart Ingress Gateway Node Port
+  - variable: ingressGateways.defaults.service.annotations
+    default: ""
+    description: "Annotations to apply to the ingress gateway service"
+    type: string
+    label: Consul Chart Ingress Gateway Annotations
+  - variable: ingressGateways.defaults.service.additionalSpec
+    default: ""
+    description: "Optional YAML string that will be appended to the Service spec"
+    type: string
+    label: Consul Chart Ingress Gateway Additional Spec
+  - variable: ingressGateways.defaults.consulNamespace
+    default: "default"
+    description: "Defines the Consul namespace to register the gateway into"
+    type: string
+    show_if: "server.enterpriseLicense.secretName="
+    label: Consul Chart Ingress Gateway Consul Namespace
+  - variable: ingressGateways.defaults.annotations
+    default: ""
+    description: "Annotations to apply to the ingress gateway deployment"
+    type: string
+    label: Consul Chart Ingress Gateway Annotations
+  - variable: ingressGateways.gateways.name
+    default: "ingress-gateway"
+    description: "Defines the name of the gateway"
+    type: string
+    label: Consul Chart Ingress Gateway Name
+
+# config terminating gateway settings
+- variable: terminatingGateways.enabled
+  default: false
+  description: "Consul Chart Terminating Gateway Settings"
+  type: boolean
+  required: true
+  label: Consul Chart Terminating Gateway Settings
+  show_if: "global.enabled=true"
+  show_subquestion_if: true
+  group: "Terminating Gateway Settings"
+  subquestions:
+  - variable: terminating.defaults.replicas
+    default: 2
+    description: "Number of replicas for each terminating gateway defined"
+    type: int
+    label: Consul Chart Terminating Gateway Replicas
+  - variable: terminating.defaults.extraVolumes
+    default: "[]"
+    description: "List of extra volumes to mount"
+    type: string
+    label: Consul Chart Terminating Gateway Extra Vol
+  - variable: terminating.defaults.annotations
+    default: ""
+    description: "Annotations to apply to the terminating gateway deployment"
+    type: string
+    label: Consul Chart Terminating Gateway Annotations
+  - variable: terminating.defaults.consulNamespace
+    default: "default"
+    description: "Defines the Consul namespace to register the gateway into"
+    type: string
+    show_if: "server.enterpriseLicense.secretName="
+    label: Consul Chart Terminating Gateway Consul Namespace
+  - variable: terminating.gateways.name
+    default: "terminating-gateway"
+    description: "Defines the name of the gateway."
+    type: string
+    label: Consul Chart Terminating Gateway Name
