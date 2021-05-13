@@ -1,0 +1,31 @@
+annotations:
+  catalog.cattle.io/certified: partner
+  catalog.cattle.io/release-name: consul
+  artifacthub.io/images: |
+    - name: consul
+      image: hashicorp/consul:1.10.0-beta2
+    - name: consul-k8s
+      image: hashicorp/consul-k8s:0.26.0-beta2
+    - name: envoy
+      image: envoyproxy/envoy-alpine:v1.16.0
+  artifacthub.io/license: MPL-2.0
+  artifacthub.io/links: |
+    - name: Consul Homepage
+      url: https://www.consul.io
+    - name: Documentation
+      url: https://www.consul.io/docs/k8s
+    - name: Chart GitHub Repository
+      url: https://github.com/hashicorp/consul-helm
+  artifacthub.io/prerelease: "true"
+apiVersion: v2
+appVersion: 1.10.0-beta2
+description: Official HashiCorp Consul Chart
+home: https://www.consul.io
+icon: https://raw.githubusercontent.com/hashicorp/consul-helm/master/assets/icon.png
+kubeVersion: '>=1.16.0-0'
+name: consul
+sources:
+  - https://github.com/hashicorp/consul
+  - https://github.com/hashicorp/consul-helm
+  - https://github.com/hashicorp/consul-k8s
+version: 0.32.0-beta200
