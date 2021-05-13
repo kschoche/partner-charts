@@ -1,50 +1,32 @@
-# HashiCorp Consul
-[HashiCorp Consul](https://github.com/hashicorp/consul-helm) is a tool that provides the foundation of cloud networking automation using a central registry for service-based networking. Consul’s core use cases include:
+# Datadog
 
-* Service registry & health monitoring, to provide a real-time directory of all services with their health status;
-* Network middleware automation, with service discovery for dynamic reconfiguration as services scale up, down or move;
-* Zero trust network with service mesh, to secure service-to-service traffic with identity-based security policies and encrypted traffic with Mutual-TLS.
+[Datadog](https://www.datadoghq.com/) is a hosted infrastructure monitoring platform. This chart adds the Datadog Agent to all nodes in your cluster via a DaemonSet. It also optionally depends on the [kube-state-metrics chart](https://github.com/kubernetes/charts/tree/master/stable/kube-state-metrics). For more information about monitoring Kubernetes with Datadog, please refer to the [Datadog documentation website](https://docs.datadoghq.com/agent/basic_agent_usage/kubernetes/).
 
-## Overview
-This repository contains the official HashiCorp Helm chart for installing
-and configuring Consul on Kubernetes. This chart supports multiple use
-cases of Consul on Kubernetes, depending on the values provided.
+Datadog [offers two variants](https://hub.docker.com/r/datadog/agent/tags/), switch to a `-jmx` tag if you need to run JMX/java integrations. The chart also supports running [the standalone dogstatsd image](https://hub.docker.com/r/datadog/dogstatsd/tags/).
 
-For full documentation on this Helm chart along with all the ways you can
-use Consul with Kubernetes, please see the
-[Consul and Kubernetes documentation](https://www.consul.io/docs/platform/k8s/index.html).
+See the [Datadog JMX integration](https://docs.datadoghq.com/integrations/java/) to learn more.
 
 ## Prerequisites
-  * **Helm 2.10+ or Helm 3.0+**
-  * **Kubernetes 1.9+** - This is the earliest version of Kubernetes tested.
-    It is possible that this chart works with earlier versions but it is
-    untested.
 
-## Usage
+Kubernetes 1.4+ or OpenShift 3.4+, note that:
 
-Detailed installation instructions for Consul on Kubernetes are found [here](https://www.consul.io/docs/k8s/installation/overview). 
+* the Datadog Agent supports Kubernetes 1.3+
+* The Datadog chart's defaults are tailored to Kubernetes 1.7.6+, see [Datadog Agent legacy Kubernetes versions documentation](https://github.com/DataDog/datadog-agent/tree/master/Dockerfiles/agent#legacy-kubernetes-versions) for adjustments you might need to make for older versions
 
-1. Add the HashiCorp Helm Repository:
-    
-        $ helm repo add hashicorp https://helm.releases.hashicorp.com
-        "hashicorp" has been added to your repositories
-    
-2. Ensure you have access to the consul chart: 
+## Quick start
 
-        $ helm search repo hashicorp/consul
-        NAME                CHART VERSION   APP VERSION DESCRIPTION
-        hashicorp/consul    0.20.1          1.7.2       Official HashiCorp Consul Chart
+By default, the Datadog Agent runs in a DaemonSet. It can alternatively run inside a Deployment for special use cases.
 
-3. Now you're ready to install Consul! To install Consul with the default configuration using Helm 3 run:
+**Note:** simultaneous DaemonSet + Deployment installation within a single release will be deprecated in a future version, requiring two releases to achieve this.
 
-        $ helm install consul hashicorp/consul --set global.name=consul
-        NAME: consul
+### Installing the Datadog Chart
 
-Please see the many options supported in the `values.yaml`
-file. These are also fully documented directly on the
-[Consul website](https://www.consul.io/docs/platform/k8s/helm.html).
+To install the chart with the release name `<RELEASE_NAME>`, retrieve your Datadog API key from your [Agent Installation Instructions](https://app.datadoghq.com/account/settings#agent/kubernetes) and run:
 
-## Tutorials
+```bash
+helm install --name <RELEASE_NAME> \
+  --set datadog.apiKey=<DATADOG_API_KEY> stable/datadog
+```
 
-You can find examples and complete tutorials on how to deploy Consul on 
-Kubernetes using Helm on the [HashiCorp Learn website](https://learn.hashicorp.com/consul).
+By default, this Chart creates a Secret and puts an API key in that Secret.
+However, you can use manually created secret by setting the `datadog.apiKeyExistingSecret` value. After a few minutes, you should see hosts and metrics being reported in Datadog.
