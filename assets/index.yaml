@@ -22,9 +22,9 @@ entries:
       catalog.cattle.io/release-name: consul
     apiVersion: v2
     appVersion: 1.10.0-beta2
-    created: "2021-05-13T14:28:39.642182-05:00"
+    created: "2021-05-13T16:13:45.252801-05:00"
     description: Official HashiCorp Consul Chart
-    digest: 2608fb02ae2cdad554124ada59d1b9c608706b23f19da31c332f327397d70028
+    digest: 148fd44e2e1c59328e52bad9d15317f4d7179bfb91ff0a67d7b822e052f96def
     home: https://www.consul.io
     icon: https://raw.githubusercontent.com/hashicorp/consul-helm/master/assets/icon.png
     kubeVersion: '>=1.16.0-0'
@@ -36,4 +36,62 @@ entries:
     urls:
     - assets/consul/consul-0.32.0-beta200.tgz
     version: 0.32.0-beta200
-generated: "2021-05-13T14:28:39.626952-05:00"
+  datadog:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/release-name: datadog
+    apiVersion: v1
+    appVersion: "7"
+    created: "2021-05-13T16:13:45.257413-05:00"
+    dependencies:
+    - condition: datadog.kubeStateMetricsEnabled
+      name: kube-state-metrics
+      repository: https://charts.helm.sh/stable
+      version: =2.8.11
+    description: Datadog Agent
+    digest: 0e5e5cfb4e17b891614d1c380a160884b7aa37933d24566a1be6f749fd9a833d
+    home: https://www.datadoghq.com
+    icon: https://datadog-live.imgix.net/img/dd_logo_70x75.png
+    keywords:
+    - monitoring
+    - alerting
+    - metric
+    maintainers:
+    - email: support@datadoghq.com
+      name: Datadog
+    name: datadog
+    sources:
+    - https://app.datadoghq.com/account/settings#agent/kubernetes
+    - https://github.com/DataDog/datadog-agent
+    urls:
+    - assets/datadog/datadog-2.4.200.tgz
+    version: 2.4.200
+  haproxy:
+  - annotations:
+      catalog.cattle.io/certified: partner
+      catalog.cattle.io/release-name: haproxy
+    apiVersion: v1
+    appVersion: 1.5.4
+    created: "2021-05-13T16:13:45.259451-05:00"
+    description: A Helm chart for HAProxy Kubernetes Ingress Controller
+    digest: 9d372cfe75a875d0a07dc957def83a5ae1464fdb5da613c59e7e34b0163d0146
+    home: https://github.com/haproxytech/helm-charts/tree/master/kubernetes-ingress
+    icon: http://www.haproxy.org/img/HAProxyCommunityEdition_60px.png
+    keywords:
+    - ingress
+    - haproxy
+    kubeVersion: '>=1.12.0-0'
+    maintainers:
+    - email: mmhedhbi@haproxy.com
+      name: Moemen Mhedhbi
+    - email: bassmann@haproxy.com
+      name: Baptiste Assmann
+    - email: dkorunic@haproxy.com
+      name: Dinko Korunic
+    name: haproxy
+    sources:
+    - https://github.com/haproxytech/kubernetes-ingress
+    urls:
+    - assets/haproxy-ddd/haproxy-1.12.500.tgz
+    version: 1.12.500
+generated: "2021-05-13T16:13:45.242526-05:00"
