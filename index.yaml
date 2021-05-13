@@ -22,9 +22,9 @@ entries:
       catalog.cattle.io/release-name: consul
     apiVersion: v2
     appVersion: 1.10.0-beta2
-    created: "2021-05-13T10:58:54.335852-05:00"
+    created: "2021-05-13T14:22:06.916842-05:00"
     description: Official HashiCorp Consul Chart
-    digest: 9e6f4ae51f3165f8a882d77485f5dc08fbc8996845d9e29e4811f97ef96689ac
+    digest: 10ca9cd4bcc73091ebe867f0818a20acff1cb6c6aec28b164e13508ab8d0a4e1
     home: https://www.consul.io
     icon: https://raw.githubusercontent.com/hashicorp/consul-helm/master/assets/icon.png
     kubeVersion: '>=1.16.0-0'
@@ -36,4 +36,4 @@ entries:
     urls:
     - assets/consul/consul-0.32.0-beta200.tgz
     version: 0.32.0-beta200
-generated: "2021-05-13T10:58:54.322364-05:00"
+generated: "2021-05-13T14:22:06.905745-05:00"
